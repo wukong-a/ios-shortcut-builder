@@ -91,6 +91,30 @@
 - ident: `is.workflow.actions.getmyworkflows`
 - 参数: 无
 
+### `calculateexpression` — 计算表达式
+
+算一个数学表达式，输出结果
+
+- ident: `is.workflow.actions.calculateexpression`
+- 参数: `Input`（表达式，如 2+3*4）
+- 注意: 未真机验证
+
+### `setvariable` — 设定变量
+
+把一个值存进指定名字的变量，供后面步骤用
+
+- ident: `is.workflow.actions.setvariable`
+- 参数: `WFInput`（要存的值）、`WFVariableName`（变量名）
+- 注意: 未真机验证
+
+### `downloadurl` — 获取 URL 内容
+
+向一个网址发请求，取回内容（可 GET/POST，常用于调家里服务）
+
+- ident: `is.workflow.actions.downloadurl`
+- 参数: `WFURL`（网址）、`WFHTTPMethod`（GET / POST / PUT 等）、`ShowHeaders`（是否显示请求头）、`WFHTTPHeaders`（请求头）、`WFHTTPBodyType`（请求体类型）、`WFFormValues`（表单值）、`WFJSONValues`（JSON 值）、`WFRequestVariable`（请求变量）
+- 注意: 未真机验证
+
 ## 设备状态
 
 ### `battery.get` — 读电量
@@ -136,6 +160,46 @@
 - ident: `is.workflow.actions.lowpowermode.set`
 - 参数: `operation`（on/off/toggle）
 - 说明: 生成器特殊处理，会展开成多个 iOS 动作，所以实际动作数比配方里看到的多
+
+### `weather.forecast` — 查天气预报
+
+取某个地点的天气预报，输出天气数据（再接 weather.detail 取具体字段）
+
+- ident: `is.workflow.actions.weather.forecast`
+- 参数: `WFWeatherCustomLocation`（地点，空为当前位置）、`WFWeatherForecastType`（daily / hourly / current）
+- 注意: 未真机验证
+
+### `weather.detail` — 取天气字段
+
+从天气数据里取一个具体字段，如降水概率、温度
+
+- ident: `is.workflow.actions.properties.weather.conditions`
+- 参数: `WFContentItemPropertyName`（字段显示名，如「降水概率」）、`WFInput`（天气数据输入（接 weather.forecast 的输出））
+- 注意: 未真机验证；字段名随 iOS 语言变化
+
+### `getipaddress` — 获取当前 IP 地址
+
+取本机当前 IP 地址（外网或局域网）
+
+- ident: `is.workflow.actions.getipaddress`
+- 参数: `WFIPAddressSourceOption`（External / Local）、`WFIPAddressTypeOption`（IPv4 / IPv6）
+- 注意: 未真机验证
+
+### `getdevicedetails` — 获取设备的详细信息
+
+取设备的一项详情，如设备名、系统版本
+
+- ident: `is.workflow.actions.getdevicedetails`
+- 参数: `WFDeviceDetail`（要取的详情项）
+- 注意: 未真机验证
+
+### `focus.get` — 获取当前专注模式
+
+读当前开着的专注模式，没有就返回空
+
+- ident: `is.workflow.actions.dnd.getfocus`
+- 参数: 无
+- 注意: 未真机验证
 
 ## App 与跳转
 
@@ -203,6 +267,22 @@
 - 参数: 无
 - 注意: 要人说话
 
+### `getcurrentsong` — 获取当前歌曲
+
+取正在播放的歌曲的一个字段，如标题、艺人
+
+- ident: `is.workflow.actions.getcurrentsong`
+- 参数: `Subject`（要取的字段：标题 / 艺人 / 专辑等）
+- 注意: 未真机验证
+
+### `savetocameraroll` — 保存到照片
+
+把图片或视频存到照片 App，可指定相册
+
+- ident: `is.workflow.actions.savetocameraroll`
+- 参数: `WFCameraRollSelectedGroup`（相册名）、`WFInput`（要保存的内容）
+- 注意: 未真机验证
+
 ## 通信
 
 ### `sms.send` — 发短信
@@ -212,6 +292,56 @@
 - ident: `is.workflow.actions.sendmessage`
 - 参数: `WFSendMessageActionRecipients`（号码或邮箱）、`WFSendMessageContent`（内容）
 - 注意: 首次有发送确认弹窗
+
+## 系统控制
+
+### `flashlight` — 设定手电筒
+
+开关手电筒，可调亮度
+
+- ident: `is.workflow.actions.flashlight`
+- 参数: `operation`（on / off / toggle）、`state`（开关状态）、`WFFlashlightLevel`（亮度 0–1）、`ShowWhenRun`（运行时是否显示）
+- 注意: 未真机验证
+
+### `airplanemode.set` — 设定飞行模式
+
+开关飞行模式
+
+- ident: `is.workflow.actions.airplanemode.set`
+- 参数: `operation`（on / off / toggle）、`OnValue`（开或关）、`ShowWhenRun`（运行时是否显示）
+- 注意: 未真机验证
+
+### `wifi.set` — 设定无线局域网
+
+开关 Wi-Fi
+
+- ident: `is.workflow.actions.wifi.set`
+- 参数: `operation`（on / off / toggle）、`OnValue`（开或关）、`ShowWhenRun`（运行时是否显示）
+- 注意: 未真机验证
+
+### `bluetooth.set` — 设定蓝牙
+
+开关蓝牙
+
+- ident: `is.workflow.actions.bluetooth.set`
+- 参数: `operation`（on / off / toggle）、`OnValue`（开或关）、`ShowWhenRun`（运行时是否显示）
+- 注意: 未真机验证
+
+### `lockscreen` — 锁定屏幕
+
+立即锁定屏幕
+
+- ident: `is.workflow.actions.lockscreen`
+- 参数: 无
+- 注意: 未真机验证
+
+### `appearance` — 设定外观
+
+切换浅色 / 深色外观
+
+- ident: `is.workflow.actions.appearance`
+- 参数: `operation`（set / toggle）、`style`（Light / Dark）、`ShowWhenRun`（运行时是否显示）
+- 注意: 未真机验证
 
 ---
 
@@ -236,7 +366,7 @@
 
 ## 扩展：注册表里没有的动作
 
-26 个是常用集合，`shortcutkit` 里还注册了 1700 多个。查一个动作长什么样：
+42 个是常用集合，`shortcutkit` 里还注册了 1700 多个。查一个动作长什么样：
 
 ```bash
 python3 -c "import shortcutkit as sk, json; \
@@ -281,6 +411,8 @@ python3 -c "import shortcutkit as sk; print([k for k in sk.ACTIONS if 'weather' 
 { "do": "weather.forecast", "WFWeatherForecastType": "daily" },
 { "do": "weather.detail", "WFContentItemPropertyName": "降水概率" }
 ```
+
+（这两条 alias 是示例，得先按上面的格式注册进 `lib/registry.json` 才能用。）
 
 `properties.weather.conditions` 的 `WFContentItemPropertyName` 是**字段显示名**，
 随 iOS 语言变化（中文系统上写「降水概率」，英文系统上写 `Precipitation Chance`）。

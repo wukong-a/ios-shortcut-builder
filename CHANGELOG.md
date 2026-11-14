@@ -1,5 +1,22 @@
 # 更新记录
 
+## 2.0.2
+
+动作从 26 个扩到 42 个，补的都是每台 iPhone 都有、无需另装 App 的通用动作。
+
+- **天气**：`weather.forecast` 查预报＋`weather.detail` 取字段（两段式），
+  「下雨提醒我带伞」现在能直接做了
+- **系统控制**（新分组）：`flashlight` 手电筒、`airplanemode.set` 飞行模式、
+  `wifi.set` 无线局域网、`bluetooth.set` 蓝牙、`lockscreen` 锁屏、
+  `appearance` 浅色/深色
+- **设备状态**：`getipaddress` 取当前 IP、`getdevicedetails` 取设备详情、
+  `focus.get` 读当前专注模式
+- **数据读写**：`downloadurl` 获取 URL 内容（可 GET/POST，常用于调家里服务）、
+  `calculateexpression` 计算表达式、`setvariable` 设定变量
+- **媒体**：`getcurrentsong` 取当前歌曲、`savetocameraroll` 保存到照片
+- 新增的 16 个都标了「未真机验证」，只在编译层面验过结构；
+  本机专用的动作（比如要另装 App 的）一律不往公开包里放
+
 ## 2.0.1
 
 安全修复（ClawHub 安全审核指出，2.0.0 的问题）。

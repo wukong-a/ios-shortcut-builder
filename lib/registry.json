@@ -6,7 +6,8 @@
     "设备状态",
     "App 与跳转",
     "媒体",
-    "通信"
+    "通信",
+    "系统控制"
   ],
   "actions": [
     {
@@ -405,6 +406,312 @@
         }
       },
       "notes": "首次有发送确认弹窗"
+    },
+    {
+      "alias": "weather.forecast",
+      "ident": "is.workflow.actions.weather.forecast",
+      "zh": "查天气预报",
+      "doc": "取某个地点的天气预报，输出天气数据（再接 weather.detail 取具体字段）",
+      "group": "设备状态",
+      "params": {
+        "WFWeatherCustomLocation": {
+          "desc": "地点，空为当前位置",
+          "type": "text"
+        },
+        "WFWeatherForecastType": {
+          "desc": "daily / hourly / current",
+          "type": "enum"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "weather.detail",
+      "ident": "is.workflow.actions.properties.weather.conditions",
+      "zh": "取天气字段",
+      "doc": "从天气数据里取一个具体字段，如降水概率、温度",
+      "group": "设备状态",
+      "params": {
+        "WFContentItemPropertyName": {
+          "desc": "字段显示名，如「降水概率」",
+          "type": "text"
+        },
+        "WFInput": {
+          "desc": "天气数据输入（接 weather.forecast 的输出）",
+          "type": "text"
+        }
+      },
+      "notes": "未真机验证；字段名随 iOS 语言变化"
+    },
+    {
+      "alias": "flashlight",
+      "ident": "is.workflow.actions.flashlight",
+      "zh": "设定手电筒",
+      "doc": "开关手电筒，可调亮度",
+      "group": "系统控制",
+      "params": {
+        "operation": {
+          "desc": "on / off / toggle",
+          "type": "enum"
+        },
+        "state": {
+          "desc": "开关状态",
+          "type": "enum"
+        },
+        "WFFlashlightLevel": {
+          "desc": "亮度 0–1",
+          "type": "number"
+        },
+        "ShowWhenRun": {
+          "desc": "运行时是否显示",
+          "type": "bool"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "airplanemode.set",
+      "ident": "is.workflow.actions.airplanemode.set",
+      "zh": "设定飞行模式",
+      "doc": "开关飞行模式",
+      "group": "系统控制",
+      "params": {
+        "operation": {
+          "desc": "on / off / toggle",
+          "type": "enum"
+        },
+        "OnValue": {
+          "desc": "开或关",
+          "type": "bool"
+        },
+        "ShowWhenRun": {
+          "desc": "运行时是否显示",
+          "type": "bool"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "wifi.set",
+      "ident": "is.workflow.actions.wifi.set",
+      "zh": "设定无线局域网",
+      "doc": "开关 Wi-Fi",
+      "group": "系统控制",
+      "params": {
+        "operation": {
+          "desc": "on / off / toggle",
+          "type": "enum"
+        },
+        "OnValue": {
+          "desc": "开或关",
+          "type": "bool"
+        },
+        "ShowWhenRun": {
+          "desc": "运行时是否显示",
+          "type": "bool"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "bluetooth.set",
+      "ident": "is.workflow.actions.bluetooth.set",
+      "zh": "设定蓝牙",
+      "doc": "开关蓝牙",
+      "group": "系统控制",
+      "params": {
+        "operation": {
+          "desc": "on / off / toggle",
+          "type": "enum"
+        },
+        "OnValue": {
+          "desc": "开或关",
+          "type": "bool"
+        },
+        "ShowWhenRun": {
+          "desc": "运行时是否显示",
+          "type": "bool"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "lockscreen",
+      "ident": "is.workflow.actions.lockscreen",
+      "zh": "锁定屏幕",
+      "doc": "立即锁定屏幕",
+      "group": "系统控制",
+      "params": {},
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "appearance",
+      "ident": "is.workflow.actions.appearance",
+      "zh": "设定外观",
+      "doc": "切换浅色 / 深色外观",
+      "group": "系统控制",
+      "params": {
+        "operation": {
+          "desc": "set / toggle",
+          "type": "enum"
+        },
+        "style": {
+          "desc": "Light / Dark",
+          "type": "enum"
+        },
+        "ShowWhenRun": {
+          "desc": "运行时是否显示",
+          "type": "bool"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "getipaddress",
+      "ident": "is.workflow.actions.getipaddress",
+      "zh": "获取当前 IP 地址",
+      "doc": "取本机当前 IP 地址（外网或局域网）",
+      "group": "设备状态",
+      "params": {
+        "WFIPAddressSourceOption": {
+          "desc": "External / Local",
+          "type": "enum"
+        },
+        "WFIPAddressTypeOption": {
+          "desc": "IPv4 / IPv6",
+          "type": "enum"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "getdevicedetails",
+      "ident": "is.workflow.actions.getdevicedetails",
+      "zh": "获取设备的详细信息",
+      "doc": "取设备的一项详情，如设备名、系统版本",
+      "group": "设备状态",
+      "params": {
+        "WFDeviceDetail": {
+          "desc": "要取的详情项",
+          "type": "enum"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "getcurrentsong",
+      "ident": "is.workflow.actions.getcurrentsong",
+      "zh": "获取当前歌曲",
+      "doc": "取正在播放的歌曲的一个字段，如标题、艺人",
+      "group": "媒体",
+      "params": {
+        "Subject": {
+          "desc": "要取的字段：标题 / 艺人 / 专辑等",
+          "type": "enum"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "calculateexpression",
+      "ident": "is.workflow.actions.calculateexpression",
+      "zh": "计算表达式",
+      "doc": "算一个数学表达式，输出结果",
+      "group": "数据读写",
+      "params": {
+        "Input": {
+          "desc": "表达式，如 2+3*4",
+          "type": "text"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "setvariable",
+      "ident": "is.workflow.actions.setvariable",
+      "zh": "设定变量",
+      "doc": "把一个值存进指定名字的变量，供后面步骤用",
+      "group": "数据读写",
+      "params": {
+        "WFInput": {
+          "desc": "要存的值",
+          "type": "text"
+        },
+        "WFVariableName": {
+          "desc": "变量名",
+          "type": "text"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "downloadurl",
+      "ident": "is.workflow.actions.downloadurl",
+      "zh": "获取 URL 内容",
+      "doc": "向一个网址发请求，取回内容（可 GET/POST，常用于调家里服务）",
+      "group": "数据读写",
+      "params": {
+        "WFURL": {
+          "desc": "网址",
+          "type": "text"
+        },
+        "WFHTTPMethod": {
+          "desc": "GET / POST / PUT 等",
+          "type": "enum"
+        },
+        "ShowHeaders": {
+          "desc": "是否显示请求头",
+          "type": "bool"
+        },
+        "WFHTTPHeaders": {
+          "desc": "请求头",
+          "type": "text"
+        },
+        "WFHTTPBodyType": {
+          "desc": "请求体类型",
+          "type": "enum"
+        },
+        "WFFormValues": {
+          "desc": "表单值",
+          "type": "text"
+        },
+        "WFJSONValues": {
+          "desc": "JSON 值",
+          "type": "text"
+        },
+        "WFRequestVariable": {
+          "desc": "请求变量",
+          "type": "text"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "savetocameraroll",
+      "ident": "is.workflow.actions.savetocameraroll",
+      "zh": "保存到照片",
+      "doc": "把图片或视频存到照片 App，可指定相册",
+      "group": "媒体",
+      "params": {
+        "WFCameraRollSelectedGroup": {
+          "desc": "相册名",
+          "type": "text"
+        },
+        "WFInput": {
+          "desc": "要保存的内容",
+          "type": "text"
+        }
+      },
+      "notes": "未真机验证"
+    },
+    {
+      "alias": "focus.get",
+      "ident": "is.workflow.actions.dnd.getfocus",
+      "zh": "获取当前专注模式",
+      "doc": "读当前开着的专注模式，没有就返回空",
+      "group": "设备状态",
+      "params": {},
+      "notes": "未真机验证"
     }
   ]
 }

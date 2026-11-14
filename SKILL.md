@@ -3,7 +3,7 @@ name: ios-shortcut-builder
 display_name: iOS快捷指令生成器
 display_name_en: iOS Shortcut Builder
 description: 把「帮我做个快捷指令」「想要个一键…的」这类需求，翻译成配方并生成可导入 iPhone 的 .shortcut 文件，自带自签，无需 Mac
-description_zh: 说需求即可生成 iOS 快捷指令：翻成配方、生成、自签、交付可导入文件。不需要 Mac、Xcode 或 iCloud。覆盖 26 个常用动作、条件、循环与菜单。
+description_zh: 说需求即可生成 iOS 快捷指令：翻成配方、生成、自签、交付可导入文件。不需要 Mac、Xcode 或 iCloud。覆盖 42 个常用动作、条件、循环与菜单。
 description_en: Turn a plain-language request into an importable iOS .shortcut file — recipe, build, self-sign, deliver. No Mac, Xcode or iCloud required.
 examples_zh:
   - "帮我做个快捷指令：电量低于20%时自动开省电模式并提醒我"
@@ -13,7 +13,7 @@ examples_en:
   - "Make a shortcut that turns on Low Power Mode and notifies me when battery drops below 20%"
   - "I want a shortcut that saves my clipboard into a note"
   - "Create a shortcut that texts my family when I arrive at the office"
-version: 2.0.1
+version: 2.0.2
 author: "Niuniu"
 license: MIT
 requires:
@@ -118,7 +118,7 @@ certs/ca.mobileconfig
 先查有哪些动作可用：
 
 ```bash
-./bin/sc catalog                 # 全部 26 个，按用途分组
+./bin/sc catalog                 # 全部 42 个，按用途分组
 ./bin/sc catalog --grep 通知      # 按关键词找
 ```
 
@@ -271,11 +271,12 @@ certs/ca.mobileconfig
 
 ---
 
-## 动作目录（26 个）
+## 动作目录（42 个）
 
 每个动作都用 `shortcutkit` 的注册表逐条编译验证过：参数键对不上会直接失败，
 所以能列在这里的都在结构上成立。常用动作（通知、追加备忘录、省电、音量亮度、
-发短信、菜单）另外在真机导过一轮。
+发短信、菜单）另外在真机导过一轮。**2.0.2 新增的 16 个动作标了「未真机验证」**，
+只在编译层面验过结构，第一次用之前最好在手机上跑一遍。
 
 | 分组 | 别名 | 做什么 | 关键参数 |
 |---|---|---|---|
@@ -290,12 +291,26 @@ certs/ca.mobileconfig
 | | `reminder.add` | 建提醒事项 | `WFCalendarItemTitle` / `WFCalendarItemNotes` |
 | | `calendar.add` | 建日程 | `WFCalendarItemTitle` / `WFCalendarItemStartDate` |
 | | `shortcuts.list` | 列出全部快捷指令名 | 无 |
+| | `calculateexpression` | 计算表达式 | `Input`（表达式） |
+| | `setvariable` | 设定变量 | `WFInput` / `WFVariableName` |
+| | `downloadurl` | 获取 URL 内容 | `WFURL` / `WFHTTPMethod`（GET/POST） |
 | 设备状态 | `battery.get` | 读电量 | 无 |
 | | `currentapp.get` | 读当前 App | 无 |
 | | `location.get` | 读位置 | 无 |
 | | `brightness.set` | 设亮度 0–1 | `WFBrightness` |
 | | `volume.set` | 设音量 0–1 | `WFVolume` / `WFVolumeSetting` |
 | | `lowpower` | 低电量模式 | `operation`（on/off/toggle） |
+| | `weather.forecast` | 查天气预报 | `WFWeatherForecastType`（daily/hourly/current） |
+| | `weather.detail` | 取天气字段 | `WFContentItemPropertyName`（如「降水概率」） |
+| | `getipaddress` | 获取当前 IP 地址 | `WFIPAddressSourceOption` / `WFIPAddressTypeOption` |
+| | `getdevicedetails` | 获取设备的详细信息 | `WFDeviceDetail` |
+| | `focus.get` | 获取当前专注模式 | 无 |
+| 系统控制 | `flashlight` | 设定手电筒 | `operation` / `WFFlashlightLevel`（亮度 0–1） |
+| | `airplanemode.set` | 设定飞行模式 | `operation` / `OnValue` |
+| | `wifi.set` | 设定无线局域网 | `operation` / `OnValue` |
+| | `bluetooth.set` | 设定蓝牙 | `operation` / `OnValue` |
+| | `lockscreen` | 锁定屏幕 | 无 |
+| | `appearance` | 设定外观 | `operation` / `style`（Light/Dark） |
 | App 与跳转 | `openapp` | 打开 App | `WFAppName`（按显示名匹配，中文名可能对不上；不确定就用 `openurl` 加 URL scheme） |
 | | `openurl` | 打开链接 | `WFInput` |
 | | `shortcut.run` | 触发另一个快捷指令 | `name` / `input` |
@@ -304,6 +319,8 @@ certs/ca.mobileconfig
 | | `photo.take` | 拍照 | `WFCameraCaptureDevice` |
 | | `screenshot` | 截屏 | 无 |
 | | `dictate` | 语音转文字 | 无 |
+| | `getcurrentsong` | 获取当前歌曲 | `Subject`（标题/艺人/专辑等） |
+| | `savetocameraroll` | 保存到照片 | `WFCameraRollSelectedGroup` / `WFInput` |
 | 通信 | `sms.send` | 发短信/iMessage | `WFSendMessageActionRecipients` / `WFSendMessageContent` |
 
 `sc catalog` 会打印每个动作的全部参数说明，**拿不准就查，不要凭记忆写参数名**。
@@ -327,6 +344,9 @@ certs/ca.mobileconfig
 | 「截个屏存下来」 | `screenshot` → （接 `note.append` 或后续动作） |
 | 「出门前让我选一下」 | `menu` 两个分支：上班 / 睡觉 |
 | 「打开微信」 | `openapp` 一个动作就够（或 `openurl` 加 `weixin://`） |
+| 「下雨提醒我带伞」 | `weather.forecast` → `weather.detail` 取「降水概率」→ `if` 判断 → `notify` |
+| 「睡觉前一键关灯关网」 | `flashlight off` → `wifi.set off` → `bluetooth.set off` → `lockscreen` |
+| 「调家里服务」 | `downloadurl` 发 GET 到服务地址（比如 `http://192.168.1.10:8080/开灯`） |
 
 写配方时保持**动作数最少**：能一个动作解决的，不要拆三步。
 
@@ -335,7 +355,7 @@ certs/ca.mobileconfig
 | 需求 | 实际情况 |
 |---|---|
 | 「每天 7 点提醒我」 | 没有定时器。时间触发要用户自己在快捷指令 App 的「自动化」里设，本技能只产出被执行的动作 |
-| 「下雨提醒我带伞」 | **26 个内置动作里没有天气**，但 `shortcutkit` 注册表里有（`weather.forecast` + `properties.weather.conditions`，两段式）。按 `references/actions.md` 末尾的「扩展」一节加进注册表即可。别用 `shortcut.run` 去接输出——它拿不到子指令的返回值 |
+| 「下雨提醒我带伞」 | 2.0.2 已有天气：`weather.forecast` 取预报 → `weather.detail` 取「降水概率」字段，两段式；再 `if` 判断。别用 `shortcut.run` 去接输出——它拿不到子指令的返回值 |
 | 「读我的微信/通知」 | 没有这类动作，iOS 也不开放 |
 | 「后台一直跑」 | 快捷指令不是常驻进程，只能被触发执行 |
 

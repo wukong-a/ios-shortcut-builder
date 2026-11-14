@@ -23,7 +23,7 @@ chk "证书链是 2 张" '[ "$($PY -c "import plistlib;print(len(plistlib.load(o
 
 echo "== 2. 动作目录"
 n=$($SC catalog --json | $PY -c 'import json,sys;print(len(json.load(sys.stdin)))')
-chk "目录共 26 个动作（实际 $n）" '[ "$n" = "26" ]'
+chk "目录共 42 个动作（实际 $n）" '[ "$n" = "42" ]'
 chk "按关键词可检索" '$SC catalog --grep 通知 | grep -q notify'
 
 echo "== 3. 示例配方全部可编译"
@@ -169,7 +169,7 @@ echo "== 11. 发布元数据"
 chk "frontmatter 有 examples_zh" 'grep -q "^examples_zh:" SKILL.md'
 chk "frontmatter 有 display_name" 'grep -q "^display_name:" SKILL.md'
 chk "动作手册存在" '[ -f references/actions.md ]'
-chk "手册与注册表动作数一致" '[ "$(grep -c "^### \`" references/actions.md)" = "26" ]'
+chk "手册与注册表动作数一致" '[ "$(grep -c "^### \`" references/actions.md)" = "42" ]'
 # 个人信息残留由 package.sh 在打包时把关（它扫全包，且不会扫到自己）
 
 echo

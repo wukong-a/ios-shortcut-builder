@@ -100,7 +100,7 @@ ca.mobileconfig              发到手机上装的那个
 
 可用的东西：
 
-- **26 个动作**：`./bin/sc catalog` 全列出来，含每个参数的含义
+- **42 个动作**：`./bin/sc catalog` 全列出来，含每个参数的含义
 - **7 个变量**：`{clipboard}` `{now}` `{input}` `{prev}` `{battery}` `{location}` `{repeat_item}`
 - **控制流**：`if` / `repeat` / `repeat_each` / `menu`
 - **条件**：12 种，中英文写法都行

@@ -41,7 +41,7 @@ VAR_TABLE = """## 变量
 
 EXTEND = """## 扩展：注册表里没有的动作
 
-26 个是常用集合，`shortcutkit` 里还注册了 1700 多个。查一个动作长什么样：
+42 个是常用集合，`shortcutkit` 里还注册了 1700 多个。查一个动作长什么样：
 
 ```bash
 python3 -c "import shortcutkit as sk, json; \\
