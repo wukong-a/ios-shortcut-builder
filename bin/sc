@@ -41,9 +41,19 @@ def _sign_usable() -> tuple[bool, str]:
 
     不是所有用户都在 Linux 上，也不是所有 Linux 都能跑（musl / ARM / 老 OpenSSL）。
     与其让 subprocess 抛一个看不懂的 Exec format error，不如提前说清楚。
+    同时核对签名器哈希（bin/shortcut-sign.sha256）：文件被改过就拒绝签名，
+    防止被替换的二进制在不知情下拿到私钥去签名。
     """
     if not SIGN_BIN.is_file():
         return False, "签名器文件缺失（bin/shortcut-sign 不存在）"
+    checksum_file = ROOT / "bin" / "shortcut-sign.sha256"
+    if checksum_file.is_file():
+        import hashlib
+        expect = checksum_file.read_text(encoding="utf-8").split()[0].strip().lower()
+        actual = hashlib.sha256(SIGN_BIN.read_bytes()).hexdigest()
+        if actual != expect:
+            return False, ("签名器哈希对不上（bin/shortcut-sign 被改过或损坏），"
+                           "已拒绝使用。请从官方渠道重新获取技能包")
     if sys.platform != "linux":
         return False, (f"签名器只有 Linux x86-64 版，当前系统是 {sys.platform}。"
                        "macOS / Windows 上无法签名")
@@ -145,8 +155,23 @@ def cmd_adopt(args):
 
 
 def _cert_env():
-    """把证书目录透传给 gen-certs.sh，两边必须认同一个位置。"""
-    return {**os.environ, "CERT_DIR": str(CERT_DIR)}
+    """把证书目录透传给 gen-certs.sh，两边必须认同一个位置。
+
+    只传最小集，不继承父进程的完整环境：父进程环境里可能有别的敏感信息，
+    透传给子进程（尤其是预编译签名器）等于扩大泄露面。子进程只需要
+    PATH（找 openssl / python3 / bash）、HOME、语言、临时目录，
+    再加证书目录和 SHORTCUT_* 覆盖项。
+    """
+    env = {}
+    for k in ("PATH", "HOME", "LANG", "LC_ALL", "LC_CTYPE", "TMPDIR", "TEMP", "TMP"):
+        if k in os.environ:
+            env[k] = os.environ[k]
+    for k in ("SHORTCUT_SIGN", "SHORTCUT_KEY", "SHORTCUT_AUTH", "SHORTCUT_SIGN_LIB",
+              "SC_CERT_DIR"):
+        if k in os.environ:
+            env[k] = os.environ[k]
+    env["CERT_DIR"] = str(CERT_DIR)
+    return env
 
 
 def cmd_init(args):
@@ -184,6 +209,28 @@ def cmd_catalog(args):
     print(f"\n共 {len(acts)} 个动作。变量：{{clipboard}} {{now}} {{input}} {{prev}} "
           f"{{battery}} {{location}} {{repeat_item}}")
     return 0
+
+
+def _validate_sign_paths(out: Path, signed: Path) -> str | None:
+    """签名前的路径校验：只签编译器刚写出的那个文件。
+
+    防的是配方或输出路径被动手脚、让签名器去签/写不该碰的文件。
+    返回错误信息，无问题返回 None。
+    """
+    cert_dir = CERT_DIR.resolve()
+    out_r = out.resolve()
+    signed_r = signed.resolve()
+    if cert_dir in out_r.parents or out_r == cert_dir:
+        return f"输出文件在证书目录里，拒绝签名：{out}"
+    if cert_dir in signed_r.parents or signed_r == cert_dir:
+        return f"签名产物不能写进证书目录：{signed}"
+    if not out_r.is_file():
+        return f"待签名文件不存在：{out}"
+    if out_r.stat().st_size == 0:
+        return f"待签名文件是空的：{out}"
+    if out_r.suffix.lower() != ".shortcut":
+        return f"待签名文件不是 .shortcut：{out}"
+    return None
 
 
 def cmd_build(args):
@@ -226,6 +273,14 @@ def cmd_build(args):
             print("    → 换 Linux x86-64 环境，或看 README「平台支持」", file=sys.stderr)
         else:
             signed = out.with_name(out.stem + "-signed.shortcut")
+            # 调签名器之前先校验路径：只签编译器刚写出的文件，
+            # 不签证书目录里的东西，签名产物也不写进证书目录。
+            # 用户明确运行 sc build 本身就是「用本机证书签名」的授权，
+            # 这里防的是路径被动手脚、让签名器去碰不该碰的文件。
+            bad = _validate_sign_paths(out, signed)
+            if bad:
+                print(f"✗ {bad}", file=sys.stderr)
+                return 4
             r = subprocess.run(["bash", str(ROOT / "scripts" / "sign.sh"),
                                 str(out), str(signed), "--check"],
                                capture_output=True, text=True, env=_cert_env())

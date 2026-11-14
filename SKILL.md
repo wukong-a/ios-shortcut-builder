@@ -13,7 +13,7 @@ examples_en:
   - "Make a shortcut that turns on Low Power Mode and notifies me when battery drops below 20%"
   - "I want a shortcut that saves my clipboard into a note"
   - "Create a shortcut that texts my family when I arrive at the office"
-version: 2.0.0
+version: 2.0.1
 author: "Niuniu"
 license: MIT
 requires:
@@ -157,7 +157,12 @@ certs/ca.mobileconfig
 | 方式 | 说明 |
 |---|---|
 | 邮件附件 / 微信「文件传输助手」 | 最通用；`.shortcut` 和 `.mobileconfig` 都能发 |
-| 同局域网起个临时服务 | `python3 -m http.server 8000 -d .`，手机浏览器输 `http://电脑IP:8000/` |
+| 同局域网起个临时服务 | 只服务输出目录：`python3 -m http.server 8000 -d out/`，手机浏览器输 `http://电脑IP:8000/` |
+
+> ⚠ **绝不要从技能目录起服务**（比如 `python3 -m http.server 8000 -d .`）。
+> 技能目录里有 `certs/`，装着 CA 私钥 `ca.key` 和签名私钥 `sign.key`，
+> 从根目录起服务等于把私钥挂到局域网上任人下载。只服务 `out/` 目录，
+> 里面只有生成好的 `.shortcut` 文件，没有任何私钥。
 | AirDrop（仅 Mac） | 直接拖过去 |
 | 云盘 / 对象存储 | 生成分享直链，手机点开下载 |
 

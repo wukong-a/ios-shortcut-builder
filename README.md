@@ -35,6 +35,9 @@ iOS 15 之后，**未签名的快捷指令会被直接拒绝导入**，提示「
 
 签名器 `bin/shortcut-sign` 是预编译的 Linux x86-64 二进制，换平台就跑不动。
 `sc doctor` 会提前说清楚，不会等你签完才发现。
+随包附了它的 SHA256（`bin/shortcut-sign.sha256`），`sc doctor` 和每次
+`sc build` 前都会核对，对不上就拒绝签名——想手动核对就跑
+`sha256sum -c bin/shortcut-sign.sha256`。
 
 **只想验配方、人在别的平台**：加 `--no-sign`，产物未签名，本机验证结构够用，
 但手机不会接受导入。
